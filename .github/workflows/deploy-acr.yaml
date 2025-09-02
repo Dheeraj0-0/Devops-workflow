@@ -1,21 +1,37 @@
-deploy-acr:
-  needs: docker-build
-  runs-on: ubuntu-latest
+name: Deploy to ACR and Azure Web App
 
-  steps:
-    - uses: actions/checkout@v3
+on:
+  push:
+    branches:
+      - main
 
-    - name: Azure Login
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+jobs:
+  deploy-acr:
+    needs: docker-build
+    runs-on: ubuntu-latest
 
-    - name: ACR Login
-      run: az acr login --name myregistry12
+    steps:
+      - uses: actions/checkout@v3
 
-    - name: Push Docker image to ACR
-      run: |
-        IMAGE_NAME=YOUR_ACR_NAME.azurecr.io/devops-workflow:latest
-        docker pull ghcr.io/${{ github.repository }}:latest
-        docker tag ghcr.io/${{ github.repository }}:latest $IMAGE_NAME
-        docker push $IMAGE_NAME
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: ACR Login
+        run: az acr login --name myregistry12
+
+      - name: Push Docker image to ACR
+        run: |
+          IMAGE_NAME=myregistry12.azurecr.io/devops-workflow:latest
+          docker pull ghcr.io/${{ github.repository }}:latest
+          docker tag ghcr.io/${{ github.repository }}:latest $IMAGE_NAME
+          docker push $IMAGE_NAME
+
+      - name: Deploy to Azure Web App for Containers
+        run: |
+          az webapp config container set \
+            --name Fire-test \
+            --resource-group A \
+            --docker-custom-image-name $IMAGE_NAME \
+            --docker-registry-server-url https://myregistry12.azurecr.io
