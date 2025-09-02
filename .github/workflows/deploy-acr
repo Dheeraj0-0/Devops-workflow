@@ -11,7 +11,7 @@ deploy-acr:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: ACR Login
-      run: az acr login --name YOUR_ACR_NAME
+      run: az acr login --name myregistry12
 
     - name: Push Docker image to ACR
       run: |
