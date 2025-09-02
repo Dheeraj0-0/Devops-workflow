@@ -1,0 +1,21 @@
+deploy-acr:
+  needs: docker-build
+  runs-on: ubuntu-latest
+
+  steps:
+    - uses: actions/checkout@v3
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: ACR Login
+      run: az acr login --name YOUR_ACR_NAME
+
+    - name: Push Docker image to ACR
+      run: |
+        IMAGE_NAME=YOUR_ACR_NAME.azurecr.io/devops-workflow:latest
+        docker pull ghcr.io/${{ github.repository }}:latest
+        docker tag ghcr.io/${{ github.repository }}:latest $IMAGE_NAME
+        docker push $IMAGE_NAME
