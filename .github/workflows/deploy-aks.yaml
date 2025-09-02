@@ -1,0 +1,45 @@
+name: Deploy to AKS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout repo
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Log in to Azure
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # Log in to Azure Container Registry (ACR)
+      - name: ACR Login
+        run: |
+          az acr login --name ${{ secrets.ACR_NAME }}
+
+      # Build and Push Docker image to ACR
+      - name: Build and Push Docker Image
+        run: |
+          IMAGE_NAME=${{ secrets.ACR_NAME }}.azurecr.io/devops-workflow:${{ github.sha }}
+          docker build -t $IMAGE_NAME .
+          docker push $IMAGE_NAME
+          echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
+
+      # Set AKS Context
+      - name: Set AKS Context
+        run: |
+          az aks get-credentials --resource-group ${{ secrets.AKS_RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }}
+
+      # Deploy to AKS
+      - name: Deploy to AKS
+        run: |
+          kubectl set image deployment/devops-workflow-deployment devops-workflow-container=$IMAGE_NAME
+          kubectl rollout status deployment/devops-workflow-deployment
