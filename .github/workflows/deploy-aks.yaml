@@ -41,5 +41,11 @@ jobs:
       # Deploy to AKS
       - name: Deploy to AKS
         run: |
+          # Apply manifests if not already deployed
+          kubectl apply -f k8s/deployment.yaml
+
+          # Update the image in the deployment
           kubectl set image deployment/devops-workflow-deployment devops-workflow-container=$IMAGE_NAME
+
+          # Wait for rollout to complete
           kubectl rollout status deployment/devops-workflow-deployment
