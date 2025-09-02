@@ -29,11 +29,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # (Optional) Run retrain script
-      - name: Retrain Model
-        run: |
-          python retrain.py
-
       # Run Flask app tests (if you have any)
       - name: Run Tests
         run: |
