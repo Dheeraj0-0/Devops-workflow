@@ -1,6 +1,7 @@
 DevOps CI/CD Workflow
 This flowchart outlines a typical end-to-end DevOps workflow, from initial planning to production deployment and ongoing operations.
 
+``` mermaid
 graph TD
     subgraph "1. Plan & Code"
         A["💡 Idea / Business Requirement"] --> B["📝 Create Task in Project Management Tool <br> (e.g., Jira)"];
@@ -50,3 +51,4 @@ graph TD
     subgraph "Feedback Loop"
         GG --> A;
     end
+'''
