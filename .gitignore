@@ -11,7 +11,7 @@ venv/
 .dockerignore
 
 # Data and Models (Important!)
-*.csv
+
 pickle/model.pkl
 
 # IDE and OS files
