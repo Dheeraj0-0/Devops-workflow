@@ -15,29 +15,7 @@ spec:
         app: devops-workflow
     spec:
       containers:
-        - name: devops-workflow-container
-          image: <replace-with-your-acr-image>
-          ports:
-            - containerPort: 5000
-          resources:
-            requests:
-              cpu: "250m"
-              memory: "512Mi"
-            limits:
-              cpu: "500m"
-              memory: "1Gi"
-          env:
-            - name: ENV
-              value: "production"
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 5000
-            initialDelaySeconds: 10
-            periodSeconds: 5
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 5000
-            initialDelaySeconds: 5
-            periodSeconds: 5
+      - name: devops-workflow-container
+        image: <YOUR_ACR_NAME>.azurecr.io/devops-workflow:latest
+        ports:
+        - containerPort: 5000
