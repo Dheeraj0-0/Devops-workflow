@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: devops-workflow-container
-        image: placeholder.azurecr.io/devops-workflow:latest
+        image: IMAGE_PLACEHOLDER
         ports:
         - containerPort: 5000
