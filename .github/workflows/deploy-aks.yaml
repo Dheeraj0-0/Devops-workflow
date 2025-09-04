@@ -36,16 +36,19 @@ jobs:
       # Set AKS Context
       - name: Set AKS Context
         run: |
-          az aks get-credentials --resource-group ${{ secrets.AKS_RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }}
+          az aks get-credentials \
+            --resource-group ${{ secrets.AKS_RESOURCE_GROUP }} \
+            --name ${{ secrets.AKS_CLUSTER_NAME }}
 
       # Deploy to AKS
       - name: Deploy to AKS
         run: |
-          # Apply manifests if not already deployed
+          # Replace image in manifests before applying
+          sed -i "s|IMAGE_PLACEHOLDER|$IMAGE_NAME|g" k8s/deployment.yaml
+
+          # Apply manifests
           kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
 
-          # Update the image in the deployment
-          kubectl set image deployment/devops-workflow-deployment devops-workflow-container=$IMAGE_NAME
-
-          # Wait for rollout to complete
+          # Wait for rollout
           kubectl rollout status deployment/devops-workflow-deployment
